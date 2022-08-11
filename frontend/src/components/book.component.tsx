@@ -30,6 +30,7 @@ export default class Book extends Component<Props, State> {
         id: null,
         title: "",
         description: "",
+        image: "",
         available: false,
       },
       message: "",
@@ -82,6 +83,7 @@ export default class Book extends Component<Props, State> {
       id: this.state.currentBook.id,
       title: this.state.currentBook.title,
       description: this.state.currentBook.description,
+      image: this.state.currentBook.image,
       available: status,
     };
 
