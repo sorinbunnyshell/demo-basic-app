@@ -20,6 +20,7 @@ services:
     depends_on:
       - db
   db:
+    container_name: bunnyshell-books-db
     image: postgres
     restart: always
     user: postgres
