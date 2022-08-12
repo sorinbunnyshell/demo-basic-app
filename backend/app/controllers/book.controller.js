@@ -1,4 +1,5 @@
 const db = require("../models");
+const cache = require("../service/cache");
 const Book = db.books;
 const Op = db.Sequelize.Op;
 
@@ -128,9 +129,25 @@ exports.deleteAll = (req, res) => {
     });
 };
 
-exports.findAllAvailable = (req, res) => {
-  Book.findAll({ where: { published: true } })
+exports.findAllAvailable = async (req, res) => {
+  const cacheKey = 'available_books';
+  const cachedValue = await cache.get(cacheKey);
+
+  if (cachedValue) {
+    const books = JSON.parse(cachedValue);
+    console.log(`Serving ${books.length} available books from cache`);
+
+    res.send(cachedValue);
+
+    return;
+  }
+
+  console.log('No cache found for available books, performing the DB query to retrieve them');
+
+  Book.findAll({ where: { available: true } })
     .then(data => {
+      cache.set(cacheKey, JSON.stringify(data));
+
       res.send(data);
     })
     .catch(err => {

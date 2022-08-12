@@ -12,6 +12,8 @@ services:
       - POSTGRES_DB=bunny_books
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=need-to-replace
+      - REDIS_HOST=${REDIS_HOST-cache}
+      - REDIS_PASSWORD=${REDIS_PASSWORD-need-to-replace}
       - FRONTEND_URL=${FRONTEND_URL-http://books.local.bunnyshell.com:8081}
     ports:
       - "3080:3080"
@@ -29,6 +31,14 @@ services:
       - POSTGRES_PASSWORD=need-to-replace
     expose:
       - 5432
+  cache:
+    container_name: bunnyshell-books-cache
+    image: bitnami/redis
+    restart: always
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD-need-to-replace}
+    ports:
+      - "6379:6379"
   frontend:
       container_name: bunnyshell-books-frontend
       build:
