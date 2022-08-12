@@ -130,14 +130,19 @@ exports.deleteAll = (req, res) => {
 };
 
 exports.findAllAvailable = async (req, res) => {
-  const cacheKey = 'available_books';
+  const cacheKey = 'available_books1';
   const cachedValue = await cache.get(cacheKey);
 
   if (cachedValue) {
     const books = JSON.parse(cachedValue);
     console.log(`Serving ${books.length} available books from cache`);
 
-    res.send(cachedValue);
+    const response = {
+      cache: 'hit',
+      data: books
+    };
+
+    res.send(response);
 
     return;
   }
@@ -147,8 +152,14 @@ exports.findAllAvailable = async (req, res) => {
   Book.findAll({ where: { available: true } })
     .then(data => {
       cache.set(cacheKey, JSON.stringify(data));
+      cache.expire(cacheKey, 30);
 
-      res.send(data);
+      const response = {
+        cache: 'miss',
+        data: data
+      };
+
+      res.send(response);
     })
     .catch(err => {
       res.status(500).send({
