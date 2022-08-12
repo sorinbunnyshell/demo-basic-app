@@ -164,7 +164,7 @@ exports.deleteAll = (req, res) => {
 };
 
 exports.findAllAvailable = (req, res) => {
-  Book.findAll({ where: { published: true } })
+  Book.findAll({ where: { available: true } })
     .then(data => {
       data.forEach((book, index) => data[index].dataValues.image = getImageUrlById(book.id));
       res.send(data);
